@@ -1,0 +1,19 @@
+# Logs
+logs/
+*.log
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# IDE
+.vscode/
+.idea/
+
+# Environment (contains real API keys on user machines)
+.env
+.env.local
+
+# Bun
+node_modules/
+bun.lock

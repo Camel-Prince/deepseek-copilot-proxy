@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.local.deepseek-proxy</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>__BUN_PATH__</string>
+		<string>run</string>
+		<string>__PROXY_DIR__/proxy.ts</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<true/>
+	<key>WorkingDirectory</key>
+	<string>__PROXY_DIR__</string>
+	<key>StandardOutPath</key>
+	<string>__PROXY_DIR__/logs/out.log</string>
+	<key>StandardErrorPath</key>
+	<string>__PROXY_DIR__/logs/err.log</string>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>OPENAI_API_KEY</key>
+		<string>__DEEPSEEK_API_KEY__</string>
+		<key>DEEPSEEK_THINKING</key>
+		<string>auto</string>
+		<key>PATH</key>
+		<string>__BUN_DIR__:/usr/local/bin:/usr/bin:/bin</string>
+		<key>HOME</key>
+		<string>__USER_HOME__</string>
+	</dict>
+</dict>
+</plist>

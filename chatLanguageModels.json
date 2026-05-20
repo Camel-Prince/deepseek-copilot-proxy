@@ -1,0 +1,16 @@
+[
+        {
+                "name": "Copilot",
+                "vendor": "copilot",
+                "settings": {
+                        "gpt-5.4": {
+                                "reasoningEffort": "xhigh"
+                        }
+                }
+        },
+        {
+                "name": "deepseek-v4-pro",
+                "vendor": "ollama",
+                "url": "http://[::1]:8765"
+        }
+]
