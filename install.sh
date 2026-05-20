@@ -59,6 +59,7 @@ cp "$SCRIPT_DIR/proxy.ts" "$PROXY_DIR/proxy.ts"
 echo "✔ proxy.ts → $PROXY_DIR/proxy.ts"
 
 # ── Step 5: Generate launchd plist ────────────────────────────────────
+mkdir -p "$(dirname "$PLIST_PATH")"
 sed \
   -e "s|__BUN_PATH__|$BUN_PATH|g" \
   -e "s|__PROXY_DIR__|$PROXY_DIR|g" \
