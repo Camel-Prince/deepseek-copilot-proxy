@@ -1,22 +1,49 @@
-# DeepSeek Proxy for GitHub Copilot
+<p align="center">
+  <img src="https://img.shields.io/badge/DeepSeek-V4%20Pro-4B8BF5?style=for-the-badge&logo=deepseek&logoColor=white" alt="DeepSeek V4 Pro">
+  <img src="https://img.shields.io/badge/GitHub-Copilot-2F363D?style=for-the-badge&logo=githubcopilot&logoColor=white" alt="GitHub Copilot">
+  <img src="https://img.shields.io/badge/Bun-000000?style=for-the-badge&logo=bun&logoColor=white" alt="Bun">
+</p>
 
-通过本地 Bun 代理模拟 Ollama HTTP 协议，使 VS Code / Cursor 的 GitHub Copilot Chat 使用 DeepSeek V4 Pro（100 万上下文 + 思考模式）。
+<h1 align="center">🚀 DeepSeek Proxy for GitHub Copilot</h1>
 
-## 工作原理
+<p align="center">
+  <strong>让 GitHub Copilot Chat 用上 DeepSeek V4 Pro 的本地代理</strong><br>
+  <em>A lightweight local proxy that brings DeepSeek V4 Pro to GitHub Copilot Chat</em>
+</p>
 
-```
-VS Code Copilot ──Ollama HTTP──→ localhost:8765 (Bun proxy) ──OpenAI HTTP──→ api.deepseek.com
-```
+<p align="center">
+  <a href="#-一键安装"><strong>中文文档</strong></a> ·
+  <a href="#-quick-start"><strong>English</strong></a> ·
+  <a href="#-how-it-works">工作原理</a> ·
+  <a href="#-features">Features</a>
+</p>
 
-代理伪装成 Ollama 服务，Copilot 以为在跟本地 Ollama 对话，实际请求被转发到 DeepSeek API。
+---
 
-## 前置条件
+## 📌 一句话介绍 / One-Liner
 
-- macOS（Intel 或 Apple Silicon）
-- DeepSeek API Key（[platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys)）
-- GitHub Copilot（免费版或 Pro）
+**CN:** 一行命令，让 VS Code / Cursor 的 GitHub Copilot Chat 免费直连 DeepSeek V4 Pro（671B 参数 · 100 万上下文 · 深度推理），无需修改 Copilot 插件本身。
 
-## 一键安装
+**EN:** One command to supercharge GitHub Copilot Chat with DeepSeek V4 Pro (671B params, 1M context, reasoning mode) — no Copilot plugin hacking needed.
+
+---
+
+## ✨ Features / 核心特性
+
+| 特性 | 说明 |
+|------|------|
+| 🔌 **零侵入** | 伪装成本地 Ollama 服务，Copilot 原生兼容，无需魔改插件 |
+| 🧠 **三种思考模式** | `auto` 智能分类 / `enabled` 始终推理 / `disabled` 极速响应 |
+| 🤖 **智能路由** | `auto` 模式下自动判断问题复杂度，简单问题秒回，复杂问题深度思考 |
+| 📏 **百万上下文** | 支持 DeepSeek V4 Pro 原生 1M token 上下文窗口 |
+| 🔧 **工具调用** | 完整支持 Copilot 的 function calling / tool use |
+| 🔄 **自动重试** | 连接异常自动重试，保障稳定性 |
+| 🚀 **开机自启** | launchd 守护进程，重启 Mac 后自动运行 |
+| 📦 **一键安装** | 全自动脚本：装依赖 → 配 Key → 写模型 → 启动 → 验证 |
+
+---
+
+## 🎬 Quick Start / 一键安装
 
 ```bash
 git clone https://github.com/Camel-Prince/deepseek-copilot-proxy.git
@@ -24,18 +51,20 @@ cd deepseek-copilot-proxy
 ./install.sh
 ```
 
-安装脚本会自动：
+脚本会引导你完成全部配置。完成后重启 VS Code / Cursor，用 `Cmd+Shift+P` → `Chat: Switch Model` → 选择 `deepseek-v4-pro`。
 
-1. 询问你的 DeepSeek API Key
-2. 安装 Bun（如未安装）
-3. 复制 `proxy.ts` 到 `~/deepseek-proxy/`
-4. 生成并加载 launchd 自启配置（开机自动运行）
-5. 自动配置 VS Code / VS Code Insiders / Cursor 的模型列表
-6. 验证代理是否正常运行
+### 前提条件
 
-## 手动安装
+- macOS (Intel / Apple Silicon)
+- [DeepSeek API Key](https://platform.deepseek.com/api_keys)
+- GitHub Copilot (免费版 / Pro 均可)
 
-如果不想用安装脚本，按以下步骤操作：
+---
+
+## 🔧 手动安装 / Manual Setup
+
+<details>
+<summary>展开查看手动安装步骤</summary>
 
 ### 1. 安装 Bun
 
@@ -43,23 +72,14 @@ cd deepseek-copilot-proxy
 curl -fsSL https://bun.sh/install | bash
 ```
 
-### 2. 配置 API Key
+### 2. 设置环境变量
 
 ```bash
 export OPENAI_API_KEY="sk-your-deepseek-api-key"
-```
-
-可选：设置思考模式
-
-```bash
 export DEEPSEEK_THINKING=auto    # auto | enabled | disabled
 ```
 
-- `auto`：智能分类，简单问题跳过思考（推荐，省 token）
-- `enabled`：始终开启思考
-- `disabled`：始终关闭思考（最快）
-
-### 3. 复制并启动代理
+### 3. 启动代理
 
 ```bash
 mkdir -p ~/deepseek-proxy/logs
@@ -68,36 +88,140 @@ cd ~/deepseek-proxy
 OPENAI_API_KEY="sk-your-key" DEEPSEEK_THINKING=auto bun run proxy.ts
 ```
 
-### 4. 配置 Copilot 模型
+### 4. 配置 Copilot 模型列表
 
-编辑 VS Code 的 `chatLanguageModels.json`：
-
-**路径：** `~/Library/Application Support/Code/User/chatLanguageModels.json`
+编辑 `~/Library/Application Support/Code/User/chatLanguageModels.json`（不存在则新建）：
 
 ```json
 [
-    {
-        "name": "Copilot",
-        "vendor": "copilot"
-    },
-    {
-        "name": "deepseek-v4-pro",
-        "vendor": "ollama",
-        "url": "http://[::1]:8765"
-    }
+    { "name": "Copilot", "vendor": "copilot" },
+    { "name": "deepseek-v4-pro", "vendor": "ollama", "url": "http://[::1]:8765" }
 ]
 ```
 
-> 如果已有 Copilot 条目，只需在数组末尾追加 `deepseek-v4-pro` 条目即可。
-
 其他编辑器路径：
 
-- VS Code Insiders: `~/Library/Application Support/Code - Insiders/User/chatLanguageModels.json`
-- Cursor: `~/Library/Application Support/Cursor/User/chatLanguageModels.json`
+| 编辑器 | 模型配置文件路径 |
+|--------|-----------------|
+| VS Code | `~/Library/Application Support/Code/User/chatLanguageModels.json` |
+| VS Code Insiders | `~/Library/Application Support/Code - Insiders/User/chatLanguageModels.json` |
+| Cursor | `~/Library/Application Support/Cursor/User/chatLanguageModels.json` |
 
-### 5. 设置开机自启（可选）
+</details>
 
-生成并加载 launchd plist：
+---
+
+## 🧠 思考模式详解 / Thinking Modes
+
+| 模式 | 环境变量 | 行为 | 适用场景 |
+|------|---------|------|---------|
+| 🔵 **Auto**（推荐） | `DEEPSEEK_THINKING=auto` | 自动分类问题复杂度，简单问题跳过推理 | 日常开发，兼顾速度与质量 |
+| 🟢 **Enabled** | `DEEPSEEK_THINKING=enabled` | 始终开启深度推理 | 复杂架构、算法设计 |
+| ⚪ **Disabled** | `DEEPSEEK_THINKING=disabled` | 始终关闭推理，最快响应 | 简单问答、代码补全 |
+
+> 💡 `auto` 模式通过一次轻量级分类调用判断问题是否需要深度推理。已进入 tool-calling 链路的对话会自动保持推理开启。
+
+---
+
+## 🏗️ 工作原理 / How It Works
+
+```
+┌──────────────┐     Ollama HTTP      ┌──────────────────┐     OpenAI HTTP      ┌──────────────────┐
+│  VS Code /   │ ──────────────────→  │  Bun Proxy       │ ──────────────────→  │  api.deepseek    │
+│  Cursor      │ ←──────────────────  │  localhost:8765   │ ←──────────────────  │  .com            │
+│  Copilot     │     Ollama Response   │                  │     OpenAI Response   │                  │
+└──────────────┘                      └──────────────────┘                      └──────────────────┘
+```
+
+1. VS Code Copilot 的 "Ollama" provider 向 `http://[::1]:8765` 发送 Ollama 格式请求
+2. Bun 代理接收请求，Mock Ollama `/api/version`、`/api/tags`、`/api/show` 等端点
+3. 将 `/api/chat` 请求翻译为 OpenAI `/v1/chat/completions` 格式
+4. 注入 DeepSeek API Key，根据思考模式配置添加 `thinking` 参数
+5. 转发到 `api.deepseek.com`，将响应翻译回 Ollama 格式返回给 Copilot
+
+**核心处理逻辑（proxy.ts）：**
+
+- **消息清理**：自动合并连续同角色消息、修剪孤立的 tool_calls / tool 消息、重排 tool 消息顺序 — 确保符合 DeepSeek API 严格的消息格式要求
+- **重试机制**：对 `ConnectionRefused`、`ECONNRESET` 等瞬时网络错误自动重试 3 次（指数退避）
+- **流式透传**：SSE 流直接透传，idleTimeout 设为 255s 以兼容推理模式的长思考时间
+- **思考归一化**：在 `enabled` 模式下自动为历史 assistant 消息注入空的 `reasoning_content` 字段，确保多轮对话通过 DeepSeek 的校验
+
+---
+
+## 📁 项目结构 / Project Structure
+
+```
+deepseek-copilot-proxy/
+├── proxy.ts                          # 核心代理（Bun 单文件）
+├── install.sh                        # 一键安装脚本
+├── chatLanguageModels.json           # 模型配置参考
+├── com.local.deepseek-proxy.plist.template  # launchd 模板
+└── README.md
+```
+
+---
+
+## 🛠️ 运维管理 / Management
+
+```bash
+# 查看日志
+tail -f ~/deepseek-proxy/logs/out.log
+
+# 停止代理
+launchctl unload ~/Library/LaunchAgents/com.local.deepseek-proxy.plist
+
+# 启动代理
+launchctl load ~/Library/LaunchAgents/com.local.deepseek-proxy.plist
+
+# 验证代理是否运行
+curl -s http://localhost:8765/api/version
+```
+
+---
+
+## ❓ 常见问题 / FAQ
+
+<details>
+<summary><strong>Q: 免费版 Copilot 能用吗？</strong></summary>
+✅ 完全支持。本代理只利用了 Copilot 的 Ollama provider 能力（连接本地模型），不依赖 Copilot Pro 订阅。
+</details>
+
+<details>
+<summary><strong>Q: 代理是否安全？我的 API Key 会泄露吗？</strong></summary>
+API Key 仅存储在本地（环境变量 & launchd plist），代理不向除 `api.deepseek.com` 以外的任何地址发送请求。
+</details>
+
+<details>
+<summary><strong>Q: 能同时保留 Copilot 原生模型吗？</strong></summary>
+✅ 可以。安装脚本会在模型列表中同时保留 Copilot 和 deepseek-v4-pro，用 `Cmd+Shift+P` 随时切换。
+</details>
+
+<details>
+<summary><strong>Q: 支持 Windows / Linux 吗？</strong></summary>
+当前安装脚本针对 macOS。Linux 可参考手动安装步骤（将 launchd 替换为 systemd），Windows 可手动运行 `bun run proxy.ts`。
+</details>
+
+<details>
+<summary><strong>Q: API 费用如何？</strong></summary>
+参考 [DeepSeek 官方定价](https://platform.deepseek.com/pricing)。<br>
+- 输入：¥1 / 百万 tokens<br>
+- 输出（非思考）：¥2 / 百万 tokens<br>
+- 输出（思考模式）：¥4 / 百万 tokens<br>
+日常使用成本极低，推荐开启 `auto` 模式节省推理 token。
+</details>
+
+---
+
+## 📄 License
+
+MIT License
+
+---
+
+<p align="center">
+  <sub>Made with ❤️ for developers who want the best of both worlds: Copilot's seamless IDE integration + DeepSeek's powerful reasoning.</sub>
+</p>
+
 
 ```bash
 # 替换 __DEEPSEEK_API_KEY__ 为你的真实 Key
